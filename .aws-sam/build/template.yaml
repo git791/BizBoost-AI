@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: BizBoost AI - Voice to Catalog
+Globals:
+  Function:
+    Timeout: 30
+  Api:
+    Cors:
+      AllowMethods: '''GET,POST,OPTIONS'''
+      AllowHeaders: '''Content-Type'''
+      AllowOrigin: '''*'''
+Resources:
+  BizBoostFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: BizBoostFunction
+      Handler: app.app
+      Runtime: python3.12
+      Role: arn:aws:iam::821421641429:role/context-coders-dev-ZappaLambdaExecutionRole
+      Events:
+        GeneratePost:
+          Type: Api
+          Properties:
+            Path: /generate
+            Method: post
+    Metadata:
+      SamResourceId: BizBoostFunction
+Outputs:
+  ApiUrl:
+    Description: API Gateway endpoint URL
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/generate

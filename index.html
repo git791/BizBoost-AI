@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BizBoost AI - Voice to Catalog</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            border: 2px solid rgba(255, 140, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 3em;
+            background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            font-size: 1.3em;
+            color: #4ade80;
+            font-weight: 500;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .mic-section {
+            text-align: center;
+        }
+
+        .mic-button {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 100%);
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 140, 0, 0.4);
+        }
+
+        .mic-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(255, 140, 0, 0.6);
+        }
+
+        .mic-button:active {
+            transform: scale(0.95);
+        }
+
+        .mic-button.recording {
+            animation: pulse 1.5s infinite;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .mic-icon {
+            font-size: 50px;
+            color: white;
+        }
+
+        .status-text {
+            margin-top: 15px;
+            font-size: 1.1em;
+            color: #4ade80;
+            min-height: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #ff8c00;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 140, 0, 0.3);
+            border-radius: 10px;
+            color: #e0e0e0;
+            font-size: 1.1em;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #ff8c00;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.2em;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: #1a1a1a;
+            box-shadow: 0 5px 20px rgba(74, 222, 128, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(74, 222, 128, 0.5);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 100%);
+            color: white;
+            box-shadow: 0 5px 20px rgba(255, 140, 0, 0.3);
+            margin-top: 15px;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 140, 0, 0.5);
+        }
+
+        .result-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #4ade80;
+            margin-bottom: 15px;
+        }
+
+        .result-box h3 {
+            color: #ff8c00;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .result-box p {
+            line-height: 1.6;
+            font-size: 1.05em;
+            white-space: pre-wrap;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .tagline {
+                font-size: 1.1em;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .mic-button {
+                width: 100px;
+                height: 100px;
+            }
+
+            .mic-icon {
+                font-size: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 BizBoost AI</h1>
+            <div class="tagline">Bol ke becho - बोल के बेचो</div>
+        </header>
+
+        <!-- Voice Recording Section -->
+        <div class="card mic-section">
+            <button class="mic-button" id="micButton">
+                <span class="mic-icon">🎤</span>
+            </button>
+            <div class="status-text" id="statusText">Click the mic to start recording</div>
+        </div>
+
+        <!-- Transcript Section -->
+        <div class="card">
+            <label for="transcript">Your Voice Input (Hindi):</label>
+            <textarea id="transcript" placeholder="Your transcribed Hindi text will appear here..."></textarea>
+        </div>
+
+        <!-- Generate Button -->
+        <div class="card">
+            <button class="btn btn-primary" id="generateBtn">
+                ✨ Generate Catalog Post
+            </button>
+        </div>
+
+        <!-- Results Section -->
+        <div class="card hidden" id="resultsSection">
+            <div class="result-box">
+                <h3>📱 Hindi Post:</h3>
+                <p id="hindiPost">Your Hindi WhatsApp post will appear here...</p>
+            </div>
+            <div class="result-box">
+                <h3>🌐 English Post:</h3>
+                <p id="englishPost">Your English WhatsApp post will appear here...</p>
+            </div>
+            <button class="btn btn-secondary" id="copyBtn">
+                📋 Copy to WhatsApp
+            </button>
+        </div>
+
+        <footer>
+            Made with ❤️ for Indian small businesses
+        </footer>
+    </div>
+
+    <script>
+        // DOM Elements
+        const micButton = document.getElementById('micButton');
+        const statusText = document.getElementById('statusText');
+        const transcript = document.getElementById('transcript');
+        const generateBtn = document.getElementById('generateBtn');
+        const resultsSection = document.getElementById('resultsSection');
+        const hindiPost = document.getElementById('hindiPost');
+        const englishPost = document.getElementById('englishPost');
+        const copyBtn = document.getElementById('copyBtn');
+
+        let isRecording = false;
+        let recognition = null;
+
+        // Check if browser supports speech recognition
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.lang = 'hi-IN';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onstart = () => {
+                isRecording = true;
+                micButton.classList.add('recording');
+                statusText.textContent = '🔴 Recording... Speak now!';
+                statusText.style.color = '#ef4444';
+            };
+
+            recognition.onresult = (event) => {
+                const transcriptText = event.results[0][0].transcript;
+                transcript.value = transcriptText;
+                statusText.textContent = '✅ Recording complete!';
+                statusText.style.color = '#4ade80';
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                statusText.textContent = '❌ Error: ' + event.error;
+                statusText.style.color = '#ef4444';
+                micButton.classList.remove('recording');
+                isRecording = false;
+            };
+
+            recognition.onend = () => {
+                micButton.classList.remove('recording');
+                isRecording = false;
+                if (statusText.textContent.includes('Recording...')) {
+                    statusText.textContent = 'Click the mic to record again';
+                    statusText.style.color = '#4ade80';
+                }
+            };
+        }
+
+        // Mic button click handler
+        micButton.addEventListener('click', () => {
+            if (!recognition) {
+                alert('Speech recognition is not supported in your browser. Please use Chrome or Edge.');
+                return;
+            }
+
+            if (isRecording) {
+                recognition.stop();
+            } else {
+                transcript.value = '';
+                resultsSection.classList.add('hidden');
+                recognition.start();
+            }
+        });
+
+        // Generate button click handler
+        generateBtn.addEventListener('click', async () => {
+            const inputText = transcript.value.trim();
+            
+            if (!inputText) {
+                alert('Please record or type your product description first!');
+                return;
+            }
+
+            generateBtn.textContent = '⏳ Generating...';
+            generateBtn.disabled = true;
+            resultsSection.classList.add('hidden');
+
+            try {
+                const response = await fetch('https://5nwmzsi0hb.execute-api.us-east-1.amazonaws.com/Prod/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: inputText })
+                });
+
+                const data = await response.json();
+
+                hindiPost.textContent = data.hindi;
+                englishPost.textContent = data.english;
+                resultsSection.classList.remove('hidden');
+                resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            } catch (error) {
+                alert('Error connecting to backend. Make sure app.py is running!');
+                console.error(error);
+            } finally {
+                generateBtn.textContent = '✨ Generate Catalog Post';
+                generateBtn.disabled = false;
+            }
+        });
+
+        // Copy button click handler
+        copyBtn.addEventListener('click', () => {
+            const fullText = `${hindiPost.textContent}\n\n---\n\n${englishPost.textContent}`;
+            
+            navigator.clipboard.writeText(fullText).then(() => {
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = '✅ Copied!';
+                copyBtn.style.background = 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)';
+                
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.style.background = 'linear-gradient(135deg, #ff8c00 0%, #ff6b00 100%)';
+                }, 2000);
+            }).catch(err => {
+                alert('Failed to copy. Please copy manually.');
+                console.error('Copy failed:', err);
+            });
+        });
+    </script>
+</body>
+</html>
