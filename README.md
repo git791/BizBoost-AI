@@ -7,12 +7,6 @@
 
 ---
 
-## 🏆 Hackathon
-
-Built for **AI For Bharat Hackathon** by team **Context Coders**
-
----
-
 ## 🤔 What is BizBoost AI?
 
 India has 60 million+ small business owners. Most of them:
